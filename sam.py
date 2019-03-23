@@ -9,39 +9,55 @@ import numpy as np
 
 
 
+class Data:
+    def __init__(self):
+        self.data = []
+        self.label = []
+        self.date = []
 
 def read_csv(file_path):
     df = pd.read_csv(file_path)
-    df = df[['Short Description', 'Incident Type', 'Root Cause', 'Design Related Potential']]
-    train_data, train_label = [], []
-    test_data, test_label = [], []
-    unseen_data, unseen_label = [], []
+    print(df.columns)
+    #df = df[['Short Description', 'Incident Type', 'Root Cause', 'Design Related Potential']]
+    train = Data()
+    test = Data()
+    unseen = Data()
     
+    # data = all data
+    # train.data = subset of data wih tags
+    # train.label = corress
     for index, row in df.iterrows():
         string = (str(row['Short Description']) + " " + 
                   str(row['Incident Type']) + " " + 
                   str(row['Root Cause']))
         label = str(row['Design Related Potential'])
+        date = str(row['Incident Date'])
 
         if label == 'y' or label == 'n':
-            train_data.append(string)
-            train_label.append(label)
+            train.date.append(date)
+            train.data.append(string)
+            train.label.append(label)
 
-        unseen_data.append(string)
-        unseen_label.append(label)
+        unseen.date.append(date)
+        unseen.data.append(string)
+        unseen.label.append(label)
+
     # split train + test data
     TRAIN_TEST = 60
-    test_data = train_data[TRAIN_TEST+1:]
-    test_label = train_label[TRAIN_TEST+1:]
-    train_data = train_data[:TRAIN_TEST]
-    train_label= train_label[:TRAIN_TEST]
+    test.date = train.date[TRAIN_TEST+1:]
+    test.data = train.data[TRAIN_TEST+1:]
+    test.label = train.label[TRAIN_TEST+1:]
 
-    return train_data, train_label, test_data, test_label, unseen_data, unseen_label
+    train.date = train.date[:TRAIN_TEST]
+    train.data = train.data[:TRAIN_TEST]
+    train.label = train.label[:TRAIN_TEST]
+
+    return train, test, unseen
 
 
 if __name__ == "__main__":
     path = "incidents.csv"
-    train_data, train_label, test_data, test_label, unseen_data, unseen_label = read_csv(path)
+    train, test, unseen = read_csv(path)
     
     MODEL = "NB"
     if MODEL == "NB":
@@ -52,7 +68,7 @@ if __name__ == "__main__":
                       'tfidf__use_idf': (True, False),
                       'clf__alpha': (1e-2, 1e-3)}
     elif MODEL == "SVM":
-        text_clf = Pipeline([('vect', CountVectorizer()),
+        text_clf = Pipeline([('vect', CountVectorizer(stop_words='english')),
                              ('tfidf', TfidfTransformer()),
                              ('clf', SGDClassifier(loss='hinge', penalty='l2',
                                                    alpha=1e-3,  
@@ -62,34 +78,28 @@ if __name__ == "__main__":
                       'tfidf__use_idf': (True, False),
                       'clf__alpha': (1e-2, 1e-3)}
 
-    text_clf = text_clf.fit(train_data, train_label)
-    predicted = text_clf.predict(test_data)
-    print("non grid search", np.mean(predicted == test_label))
+    # Using purely BN/SVM
+    text_clf = text_clf.fit(train.data, train.label)
+    predicted = text_clf.predict(test.data)
+    print("non grid search", np.mean(predicted == test.label))
     
-
-    
-    
-    gs_clf = GridSearchCV(text_clf, parameters, n_jobs=-1)
-    gs_clf = gs_clf.fit(train_data, train_label)
-    predicted = gs_clf.predict(test_data)
-    print("grid search", np.mean(predicted == test_label))
-    #print(gs_clf.best_score_)
-    #print(gs_clf.best_params_)
+    # Using grid search
+    gs_clf = GridSearchCV(text_clf, parameters, n_jobs=-1, cv=3, iid=False)
+    gs_clf = gs_clf.fit(train.data, train.label)
+    predicted = gs_clf.predict(test.data)
+    print("grid search", np.mean(predicted == test.label))
 
 
-    # Model validation
-    print(np.mean(predicted == test_label))
+    for i in range(len(test.data)):
+        print(test.data[i], '|', predicted[i], '|', test.label[i], '|', test.date[i])
 
     """
-    #for i in range(len(test_data)):
-        #print(test_data[i], '|', predicted[i], '|', test_label[i])
-
     # Testing against unseen 
-    unseen_predicted = text_clf.predict(unseen_data)
-    #print(np.mean(predicted == test_label))
+    unseen_predicted = text_clf.predict(unseen.data)
+    #print(np.mean(predicted == test.label))
     no, yes = 0, 0
-    for i in range(len(unseen_data)):
-        #print(unseen_data[i], '|', unseen_predicted[i])
+    for i in range(len(unseen.data)):
+        #print(unseen.data[i], '|', unseen_predicted[i])
         if unseen_predicted[i] == 'y':
             yes += 1
         else:
