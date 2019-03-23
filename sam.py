@@ -1,13 +1,12 @@
 import pandas as pd
-from sklearn.feature_extraction.text import TfidfTransformer
-from sklearn.feature_extraction.text import CountVectorizer
+import numpy as np
+import matplotlib.pyplot as plt
+
+from sklearn.feature_extraction.text import TfidfTransformer, CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.linear_model import SGDClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV
-import numpy as np
-
-
 
 class Data:
     def __init__(self):
@@ -54,6 +53,44 @@ def read_csv(file_path):
 
     return train, test, unseen
 
+def render_graph(data):
+    yes_dict = {}
+    no_dict = {}
+    for i in range(len(data.data)):
+        if data.label[i] == 'y':
+            if len(data.date[i].split('/')) != 3:
+                continue
+
+            date = data.date[i].split('/')[2]
+
+            if date not in yes_dict:
+                yes_dict[date] = 1
+            else:
+                yes_dict[date] += 1
+        elif data.label[i] == 'n':
+            if len(data.date[i].split('/')) != 3:
+                continue
+
+            date = data.date[i].split('/')[2]
+
+            if date not in no_dict:
+                no_dict[date] = 1
+            else:
+                no_dict[date] += 1
+
+
+   
+    plt.xlabel('Date')
+    plt.ylabel('Incidents')
+    plt.bar([key for key in no_dict], [no_dict[key] for key in no_dict], label="Non-design related")
+    plt.bar([key for key in yes_dict], [yes_dict[key] for key in yes_dict], label="Design related")
+    plt.legend(loc='upper left')
+    plt.title("Design vs Non-design Related Incidents")
+    plt.show()
+
+
+
+
 
 if __name__ == "__main__":
     path = "incidents.csv"
@@ -90,21 +127,21 @@ if __name__ == "__main__":
     print("grid search", np.mean(predicted == test.label))
 
 
-    for i in range(len(test.data)):
-        print(test.data[i], '|', predicted[i], '|', test.label[i], '|', test.date[i])
+    #for i in range(len(test.data)):
+    #    print(test.data[i], '|', predicted[i], '|', test.label[i], '|', test.date[i])
 
-    """
     # Testing against unseen 
-    unseen_predicted = text_clf.predict(unseen.data)
+    unseen.label = text_clf.predict(unseen.data)
     #print(np.mean(predicted == test.label))
     no, yes = 0, 0
-    for i in range(len(unseen.data)):
-        #print(unseen.data[i], '|', unseen_predicted[i])
-        if unseen_predicted[i] == 'y':
-            yes += 1
-        else:
-            no += 1
+    #for i in range(len(unseen.data)):
+    #    print(unseen.data[i], '|', unseen_predicted[i])
+    #    if unseen_predicted[i] == 'y':
+    #        yes += 1
+    #    else:
+    #        no += 1
+    #render_graph([unseen[i] for i in range(len(unseen_predicted)) if unseen_predicted[i] == 'y'])
+    render_graph(unseen)
 
     print("Yes:", yes, "No:" , no)
 
-"""
