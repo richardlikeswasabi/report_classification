@@ -144,4 +144,45 @@ if __name__ == "__main__":
     render_graph(unseen)
 
     print("Yes:", yes, "No:" , no)
+    
+%matplotlib notebook
 
+import matplotlib.pyplot as plt
+
+def render_graph(data):
+
+    yes_dict = {}
+    no_dict = {}
+    for i in range(len(data.data)):
+        if data.label[i] == 'y':
+            if len(data.date[i].split('/')) != 3:
+                continue
+
+            date = data.date[i].split('/')[2]
+
+            if date not in yes_dict:
+                yes_dict[date] = 1
+            else:
+                yes_dict[date] += 1
+
+        elif data.label[i] == 'n':
+            if len(data.date[i].split('/')) != 3:
+                continue
+
+            date = data.date[i].split('/')[2]
+
+            if date not in no_dict:
+
+                no_dict[date] = 1
+            else:
+                no_dict[date] += 1
+
+  
+
+    plt.xlabel('Date')
+    plt.ylabel('Incidents')
+    plt.bar([key for key in no_dict], [no_dict[key] for key in no_dict], label="Non-design related")
+    plt.bar([key for key in yes_dict], [yes_dict[key] for key in yes_dict], label="Design related")
+    plt.legend(loc='upper left')
+    plt.title("Design vs Non-design Related Incidents")
+    plt.show()
