@@ -145,7 +145,8 @@ if __name__ == "__main__":
 
     print("Yes:", yes, "No:" , no)
     
-%matplotlib notebook
+"""for jupyter"""
+#%matplotlib notebook
 
 import matplotlib.pyplot as plt
 
