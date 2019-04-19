@@ -119,18 +119,41 @@ def render_graph(data):
             else:
                 no_dict[date] += 1
 
-    #no_list = sort(lambda x: no_dict[0])
     no_dict = OrderedDict(sorted(no_dict.items()))
     yes_dict = OrderedDict(sorted(yes_dict.items()))
-    print(yes_dict)
 
-    plt.xlabel('Date')
-    plt.ylabel('Incidents')
-    plt.bar([key for key in no_dict], [no_dict[key] for key in no_dict], label="Non-design related")
-    plt.bar([key for key in yes_dict], [yes_dict[key] for key in yes_dict], label="Design related")
-    plt.legend(loc='upper left')
-    plt.title("Design vs Non-design Related Incidents")
-    plt.show()
+    non_design = go.Bar(
+        x=[key for key in no_dict],
+        y=[no_dict[key] for key in no_dict],
+        name='Non-Design Related',
+	marker=dict(
+	    color='rgb(55, 83, 109)'
+	)
+    )
+    design = go.Bar(
+        x=[key for key in yes_dict],
+        y=[yes_dict[key] for key in yes_dict],
+        name='Design Related',
+	marker=dict(
+	    color='rgb(26, 118, 255)'
+	)
+    )
+    
+    data = [non_design, design]
+    layout = go.Layout(
+        title='Sydney Water Design vs Non-Design Related Incidents (2013-Present)',
+        barmode='group',
+	xaxis = {'title': 'Years'},
+	yaxis = {'title': 'Number of Incidents'}
+    )
+
+    fig = go.Figure(data=data, layout=layout)
+    """ To save to file, py.iplot(fig, filename='whatever_name') """
+    # For Jupyter uncomment line below
+    #py.iplot(fig)
+    # For Python uncomment line below
+    py.plot(fig)
+
 
 if __name__ == "__main__":
     path = "SWIRL_Incident_Details_design.csv"
