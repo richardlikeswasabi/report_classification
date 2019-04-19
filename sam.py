@@ -1,11 +1,6 @@
-# UNCOMMENT THIS WHEN USING WITH JUPYTER
-#%matplotlib inline
-
-import matplotlib
 import plotly.offline as py
 import plotly.graph_objs as go
 import plotly.tools as tls
-
 
 from collections import OrderedDict
 import numpy as np
@@ -101,7 +96,6 @@ def render_graph(data):
                 continue
 
             date = data.date[i].split('/')[2]
-
             if date not in yes_dict:
                 yes_dict[date] = 1
             else:
@@ -112,9 +106,7 @@ def render_graph(data):
                 continue
 
             date = data.date[i].split('/')[2]
-
             if date not in no_dict:
-
                 no_dict[date] = 1
             else:
                 no_dict[date] += 1
@@ -192,18 +184,11 @@ if __name__ == "__main__":
             x += 1    
 
     for i in range(len(unseen.data)):
-        #print(unseen_data[i], '|', unseen_predicted[i])
-        #if unseen.predicted[i] == 'y':
-        #    yes += 1
-        #else:
-        #    no += 1
         excel.append(unseen.data[i])
         excel.append(unseen.predicted[i])
         excel.append(unseen.date[i])
         excel.append(unseen.id[i])
-    #print("Yes:", yes, "No:" , no)
             
-    
     excel_col = ["desc","design","date","number"]
     num = np.array(excel)
     reshaped = num.reshape(int(len(excel)/4),4)
