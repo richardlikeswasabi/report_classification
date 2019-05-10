@@ -1,5 +1,11 @@
-# report_classification
-For Sam
+# Incident Report Classification
+This repo utilises machine learning models to 
+- Determine if an incident is design-related
+- Determine the category of incident if design-related (e.g. automotive, low-ceiling)
+
+
+
+
 
 ## Usage
 ```
