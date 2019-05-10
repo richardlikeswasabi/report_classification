@@ -110,7 +110,7 @@ def model(MODEL,unseen):
     df.to_csv('designclass_modified.csv')
 
 if __name__ == "__main__":
-    path = "incidents.csv"    
+    path = "designclass_modified.csv"    
     train, test, unseen = read_csv(path) 
     MODEL = "SVM"
     model(MODEL,unseen)
