@@ -10,6 +10,7 @@ This repo utilises machine learning models to
 ## Usage
 ```
 pip install -r requirements.txt
+python design_classifier.py && python category_classifier.py
 ```
 
 1. Convert report incident data and copy into this directory. 
