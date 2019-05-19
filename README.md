@@ -21,9 +21,6 @@ The confusion matrix shows the tendency for other incident categories to be clas
 ### Incorrect Cases
 There exist cases where to humans, the predicted category is obviously incorrect. This needs to be improved in the future.
 However, there are also cases where the initial labels were incorrect.
-![Image](images/incorrect_1.png)
-![Image](images/incorrect_2.png)
-![Image](images/incorrect_3.png)
 
 ## Results
 ### Design Classifier
@@ -37,8 +34,6 @@ Note the IPython notebook file can also be used.
 pip install -r requirements.txt
 python design_classifier.py 
 python category_classifier.py
-```
-
 
 Note incidents.csv is required. 
 
